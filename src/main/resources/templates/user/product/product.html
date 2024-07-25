@@ -1,55 +1,4 @@
 
-<!-- Categories Section Begin -->
-<section class="categories">
-	<div class="container">
-		<div class="row">
-			<div class="categories__slider owl-carousel">
-				<div class="col-lg-3">
-					<div class="categories__item set-bg"
-						data-setbg="/img/categories/cat-1.jpg">
-						<h5>
-							<a href="#">Fresh Fruit</a>
-						</h5>
-					</div>
-				</div>
-				<div class="col-lg-3">
-					<div class="categories__item set-bg"
-						data-setbg="/img/categories/cat-2.jpg">
-						<h5>
-							<a href="#">Dried Fruit</a>
-						</h5>
-					</div>
-				</div>
-				<div class="col-lg-3">
-					<div class="categories__item set-bg"
-						data-setbg="/img/categories/cat-3.jpg">
-						<h5>
-							<a href="#">Vegetables</a>
-						</h5>
-					</div>
-				</div>
-				<div class="col-lg-3">
-					<div class="categories__item set-bg"
-						data-setbg="/img/categories/cat-4.jpg">
-						<h5>
-							<a href="#">drink fruits</a>
-						</h5>
-					</div>
-				</div>
-				<div class="col-lg-3">
-					<div class="categories__item set-bg"
-						data-setbg="/img/categories/cat-5.jpg">
-						<h5>
-							<a href="#">drink fruits</a>
-						</h5>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
-<!-- Categories Section End -->
-
 <!-- Featured Section Begin -->
 <section class="featured spad">
 	<div class="container">
@@ -61,8 +10,7 @@
 			</div>
 		</div>
 		<div class="row featured__filter">
-			<div th:each="product : ${products}"
-				class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
+			<div th:each="product : ${products}" class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
 				<div class="featured__item">
 					<div class="featured__item__pic set-bg"
 						th:attr="data-setbg='/img/product/' + ${product.imgProduct}">
@@ -75,11 +23,11 @@
 					<div class="featured__item__text">
 						<h6>
 							<a th:text="${product.productName}"
-								th:href="@{/chi-tiet-san-pham}"></a>
+								th:href="@{/chi-tiet-san-pham/{productId}(productId=${product.productId})}"></a>
 						</h6>
-				<!-- 		Hiển thị giá của ProductImageColor đầu tiên.
+						<!-- 		Hiển thị giá của ProductImageColor đầu tiên.
 						<h5 th:text="${product.productImageColors[0].price}"></h5> -->
-						
+
 						<h5 th:text="${product.lowestPriceFormatted}"></h5>
 					</div>
 				</div>

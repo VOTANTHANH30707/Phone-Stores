@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <meta charset="ISO-8859-1">
 <title>Insert title here</title>
 </head>
+
 <body>
 	<div th:fragment="header">
 		<!-- Page Preloder -->
@@ -46,7 +48,46 @@
 									</ul>
 								</div>
 								<div class="header__top__right__auth">
-									<a href="#"><i class="fa fa-user"></i> Login</a>
+									<a th:if="${session.userSession == null}"
+										th:href="@{/user/login}" target="_self"> <i
+										class="fa fa-user"></i> Login
+									</a>
+
+									<!-- Link that triggers the modal -->
+									<a th:if="${session.userSession != null}" href="#"
+										data-toggle="modal" data-target="#userModal"
+										th:text="${session.userSession.hoVaTen}"> <i
+										class="fa fa-user"></i>
+									</a>
+
+									<!-- Modal structure -->
+									<div th:if="${session.userSession != null}" class="modal fade"
+										id="userModal" tabindex="-1" role="dialog"
+										aria-labelledby="userModalLabel" aria-hidden="true">
+										<div class="modal-dialog" role="document">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="userModalLabel">User
+														Details</h5>
+													<button type="button" class="close" data-dismiss="modal"
+														aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+												</div>
+												<div class="modal-body">
+													<!-- You can add more user details here -->
+													<p th:text="'Name: ' + ${session.userSession.hoVaTen}"></p>
+													<p th:text="'Email: ' + ${session.userSession.email}"></p>
+												</div>
+												<div class="modal-footer">
+													<button type="button" ng-click="logout()"
+														class="btn btn-danger" data-dismiss="modal">Đăng
+														xuất</button>
+													<!-- Add more buttons if needed -->
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -103,8 +144,8 @@
 								<i class="fa fa-bars"></i> <span>Loại sản phẩm</span>
 							</div>
 							<ul>
-								<li th:each="category : ${listCate}"><a
-									th:text="${category.name}"></a></li>
+								<li th:each="cate : ${listCate}"><a th:text="${cate.name}"
+									th:href="@{/loai-san-pham/{cateId}(cateId=${cate.cateId})}"></a></li>
 							</ul>
 						</div>
 
@@ -138,4 +179,5 @@
 
 	</div>
 </body>
+
 </html>

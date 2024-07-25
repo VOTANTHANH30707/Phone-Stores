@@ -3,6 +3,7 @@ package vtt.asm.entity;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,7 +44,8 @@ public class Product {
 	@ManyToOne
 	@JoinColumn(name = "CateId", nullable = false)
 	private Category category;
-
+	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "ngay_nhap", nullable = false)
 	private Date ngayNhap;
 

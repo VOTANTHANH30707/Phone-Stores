@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{/user/layout :: dynamic(~{::body})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/user/layout :: dynamic(~{::body})}">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+	<meta charset="ISO-8859-1">
+	<title>thanhStore</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
+
 <body>
 	<!-- Header Section Begin -->
 	<header class="header">
@@ -22,9 +27,8 @@
 						<div class="header__top__right">
 							<div class="header__top__right__social">
 								<a href="#"><i class="fa fa-facebook"></i></a> <a href="#"><i
-									class="fa fa-twitter"></i></a> <a href="#"><i
-									class="fa fa-linkedin"></i></a> <a href="#"><i
-									class="fa fa-pinterest-p"></i></a>
+										class="fa fa-twitter"></i></a> <a href="#"><i class="fa fa-linkedin"></i></a> <a
+									href="#"><i class="fa fa-pinterest-p"></i></a>
 							</div>
 							<div class="header__top__right__language">
 								<img src="/img/language.png" alt="">
@@ -36,7 +40,17 @@
 								</ul>
 							</div>
 							<div class="header__top__right__auth">
-								<a href="#"><i class="fa fa-user"></i> Login</a>
+								<div th:if="${session.userSession == null}">
+									<a th:href="@{/user/login}" target="_self"> <i class="fa fa-user"></i> Đăng nhập
+									</a> <a th:href="@{/user/sign-up}" target="_self"> <i class="fa fa-user"></i> Đăng
+										ký
+									</a>
+								</div>
+
+								<a th:if="${session.userSession != null}" href="#"
+									th:text="${session.userSession.hoVaTen}"> <i class="fa fa-user"></i>
+								</a>
+
 							</div>
 						</div>
 					</div>
@@ -61,7 +75,8 @@
 									<li><a th:href="@{|/gio-hang|}">Shoping Cart</a></li>
 									<li><a th:href="@{|/thanh-toan|}">Check Out</a></li>
 									<li><a href="#">Blog Details</a></li>
-								</ul></li>
+								</ul>
+							</li>
 							<li><a href="#">Blog</a></li>
 							<li><a href="#">Contact</a></li>
 						</ul>
@@ -70,8 +85,7 @@
 				<div class="col-lg-3">
 					<div class="header__cart">
 						<ul>
-							<li><a th:href="@{|/gio-hang|}"><i
-									class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+							<li><a th:href="@{|/gio-hang|}"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
 						</ul>
 					</div>
 				</div>
@@ -94,8 +108,7 @@
 						</div>
 						<ul>
 							<li th:each="cate : ${listCate}"><a th:text="${cate.name}"
-								href="#"></a></li>
-
+									th:href="@{/loai-san-pham/{cateId}(cateId=${cate.cateId})}"></a></li>
 						</ul>
 					</div>
 				</div>
@@ -106,7 +119,7 @@
 								<div class="hero__search__categories">
 									All Categories <span class="arrow_carrot-down"></span>
 								</div>
-								<input type="text" placeholder="What do yo u need?">
+								<input type="text" placeholder="What do you need?">
 								<button type="submit" class="site-btn">SEARCH</button>
 							</form>
 						</div>
@@ -135,8 +148,7 @@
 		</div>
 	</section>
 	<!-- Hero Section End -->
-
 	<div th:insert="~{/user/product/product}"></div>
-
 </body>
+
 </html>

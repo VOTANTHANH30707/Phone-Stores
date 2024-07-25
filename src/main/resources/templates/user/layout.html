@@ -1,34 +1,85 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:fragment="dynamic(view)">
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="dynamic(view)" ng-app="app">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
-<link
-	href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap"
-	rel="stylesheet">
+    <meta charset="ISO-8859-1">
+    <title>thanhStore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
 
-<!-- Css Styles -->
-<link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
-<link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
-<link rel="stylesheet" href="/css/elegant-icons.css" type="text/css">
-<link rel="stylesheet" href="/css/nice-select.css" type="text/css">
-<link rel="stylesheet" href="/css/jquery-ui.min.css" type="text/css">
-<link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css">
-<link rel="stylesheet" href="/css/slicknav.min.css" type="text/css">
-<link rel="stylesheet" href="/css/style.css" type="text/css">
+    <!-- Css Styles -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/slicknav.min.css" type="text/css">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 </head>
-<body>
 
-	<main th:replace="${view}"></main>
-	<footer th:insert="~{/user/fragments/footer :: footer}"></footer>
-	
-	<script src="/js/jquery-3.3.1.min.js"></script>
-	<script src="/js/bootstrap.min.js"></script>
-	<script src="/js/jquery.nice-select.min.js"></script>
-	<script src="/js/jquery-ui.min.js"></script>
-	<script src="/js/jquery.slicknav.js"></script>
-	<script src="/js/mixitup.min.js"></script>
-	<script src="/js/owl.carousel.min.js"></script>
-	<script src="/js/main.js"></script>
+<body ng-controller="ctrl">
+
+    <main th:replace="${view}"></main>
+    <footer th:insert="~{/user/fragments/footer :: footer}"></footer>
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Xác định giá trị mặc định cho dungLuong và color từ Thymeleaf
+        const defaultDungLuong = /*[[${selectedDungLuong}]]*/ 'defaultDungLuong';
+        const defaultColor = /*[[${selectedColor}]]*/ 'defaultColor';
+
+        // Lấy giá trị của dungLuong và color từ URL
+        const params = new URLSearchParams(window.location.search);
+        const currentDungLuong = decodeURIComponent(params.get('dungLuong')) || defaultDungLuong;
+        const currentColor = decodeURIComponent(params.get('color')) || defaultColor;
+
+        // Lấy tất cả các nút dung lượng và màu sắc
+        const dungLuongBtns = document.querySelectorAll('.dungluong-btn');
+        const colorBtns = document.querySelectorAll('.color-btn');
+
+        // Đánh dấu nút dung lượng hiện tại hoặc giá trị mặc định
+        dungLuongBtns.forEach(btn => {
+            if (btn.dataset.dungluong === currentDungLuong) {
+                btn.classList.add('selected');
+            }
+        });
+
+        // Đánh dấu nút màu sắc hiện tại hoặc giá trị mặc định
+        colorBtns.forEach(btn => {
+            if (btn.dataset.color === currentColor) {
+                btn.classList.add('selected');
+            }
+        });
+    });
+
+    var app = angular.module('app', []);
+    app.controller('ctrl', function ($scope, $http, $window) {
+        $scope.logout = function () {
+            $http.get('/api/account/logout')
+                .then(function (response) {
+                    if (response.data.Status === 'Success') {
+                        alert(response.data.message);
+                        $window.location.href = response.data.redirectUrl;
+                    } else {
+                        alert('Logout failed');
+                    }
+                }, function (error) {
+                    alert('An error occurred during logout');
+                });
+        };
+    });
+</script>
+
+    
+
+    <script src="/js/jquery-3.3.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery.nice-select.min.js"></script>
+    <script src="/js/jquery-ui.min.js"></script>
+    <script src="/js/jquery.slicknav.js"></script>
+    <script src="/js/mixitup.min.js"></script>
+    <script src="/js/owl.carousel.min.js"></script>
+    <script src="/js/main.js"></script>
 </body>
+
 </html>
