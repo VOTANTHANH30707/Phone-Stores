@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Insert title here</title>
+</head>
+
+<body>
+	<!-- Sidebar Start -->
+	<aside class="left-sidebar" th:fragment="slidebar">
+		<!-- Sidebar scroll-->
+		<div>
+			<div class="brand-logo d-flex align-items-center justify-content-between">
+				<a th:href="@{/user/index}" class="text-nowrap logo-img"> <img src="/assets/images/logos/dark-logo.svg"
+						width="180" alt="" />
+				</a>
+				<div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+					<i class="ti ti-x fs-8"></i>
+				</div>
+			</div>
+			<!-- Sidebar navigation-->
+			<nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+				<ul id="sidebarnav">
+					<li class="sidebar-item"><a class="sidebar-link" th:href="@{/admin/product}" aria-expanded="false">
+							<span> <i class="ti ti-layout-dashboard"></i>
+							</span> <span class="hide-menu">product</span>
+						</a></li>
+
+					<li class="sidebar-item"><a class="sidebar-link" href="./ui-forms.html" aria-expanded="false">
+							<span> <i class="ti ti-file-description"></i>
+							</span> <span class="hide-menu">Forms</span>
+						</a></li>
+
+					<li class="sidebar-item"><a class="sidebar-link" href="./authentication-login.html"
+							aria-expanded="false"> <span>
+								<i class="ti ti-login"></i>
+							</span> <span class="hide-menu">Login</span>
+						</a></li>
+					<li class="sidebar-item"><a class="sidebar-link" href="./authentication-register.html"
+							aria-expanded="false">
+							<span> <i class="ti ti-user-plus"></i>
+							</span> <span class="hide-menu">Register</span>
+						</a></li>
+				</ul>
+			</nav>
+			<!-- End Sidebar navigation -->
+		</div>
+		<!-- End Sidebar scroll-->
+	</aside>
+	<!--  Sidebar End -->
+</body>
+
+</html>

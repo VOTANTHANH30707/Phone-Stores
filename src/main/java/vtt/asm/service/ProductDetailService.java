@@ -17,6 +17,10 @@ public class ProductDetailService {
 	@Autowired
 	private ProductImageColorRepository productImgColorRepo;
 
+	public List<ProductImageColor> getAllProductImageColors() {
+		return productImgColorRepo.findAll();
+	}
+
 	public Product getProductById(int productId) {
 		return productRepo.findById(productId).orElse(null);
 	}

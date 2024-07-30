@@ -1,107 +1,97 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/user/layout :: dynamic(~{::body})}">
-
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{/user/layout :: dynamic(~{::body})}">
 <head>
-    <meta charset="ISO-8859-1">
-    <title>Chi tiết sản phẩm</title>
+<meta charset="ISO-8859-1">
+<title>Chi tiết sản phẩm</title>
 </head>
-
 <body>
-    <div th:insert="~{/user/fragments/header :: header}"></div>
+	<div th:insert="~{/user/fragments/header :: header}"></div>
 
-    <!-- Breadcrumb Section Begin -->
-    <section class="breadcrumb-section set-bg" data-setbg="/img/breadcrumb.jpg">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <div class="breadcrumb__text">
-                        <h2>Chi tiết sản phẩm</h2>
-                        <div class="breadcrumb__option">
-                            <a th:href="@{|/user/index|}">Home</a> <span th:text="${product.productName}"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Breadcrumb Section End -->
+	<section class="breadcrumb-section set-bg"
+		data-setbg="/img/breadcrumb.jpg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12 text-center">
+					<div class="breadcrumb__text">
+						<h2>Chi tiết sản phẩm</h2>
+						<div class="breadcrumb__option">
+							<a th:href="@{|/user/index|}">Home</a> <span
+								th:text="${product.productName}"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 
-    <!-- Product Details Section Begin -->
-    <section class="product-details spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-5 col-md-5">
-                    <div id="productCarousel" class="carousel slide" data-ride="carousel">
-                        <!-- Indicators -->
-                        <ol class="carousel-indicators">
-                            <li data-target="#productCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#productCarousel" data-slide-to="1"></li>
-                            <li data-target="#productCarousel" data-slide-to="2"></li>
-                            <!-- Add more indicators as needed based on the number of images -->
-                        </ol>
+	<section class="product-details spad">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-5 col-md-5">
+					<div id="productCarousel" class="carousel slide"
+						data-ride="carousel">
+						<div class="carousel-inner">
 
-                        <!-- Wrapper for slides -->
-                        <div class="carousel-inner">
-                            <!-- Slide 1 -->
-                            <div class="carousel-item active">
-                                <img class="d-block w-100" th:src="@{'/img/product/' + ${product.imgProduct}}"
-                                    alt="Product Image">
-                            </div>
+							<div th:each="img, iterStat : ${listImg}" class="carousel-item"
+								th:classappend="${iterStat.index == 0} ? ' active' : ''">
+								<img class="d-block w-100" th:src="@{'/img/product/' + ${img}}"
+									alt="Product Image">
+							</div>
 
-                            <!-- Other slides -->
-                            <div th:each="img, iterStat : ${listImg}" class="carousel-item">
-                                <img class="d-block w-100" th:src="@{'/img/product/' + ${img}}" alt="Product Image">
-                            </div>
-                        </div>
+						</div>
 
-                        <!-- Left and right controls -->
-                        <a class="carousel-control-prev" href="#productCarousel" role="button" data-slide="prev"> <span
-                                class="carousel-control-prev-icon" aria-hidden="true"></span> <span
-                                class="sr-only">Previous</span>
-                        </a> <a class="carousel-control-next" href="#productCarousel" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span> <span
-                                class="sr-only">Next</span>
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-7 col-md-7">
-                    <div class="product__details__text">
-                        <h3 th:text="${product.productName}"></h3>
-                        <div class="product__details__price" id="productPrice" th:text="${price}"></div>
+						<a class="carousel-control-prev" href="#productCarousel"
+							role="button" data-slide="prev"> <span
+							class="carousel-control-prev-icon" aria-hidden="true"></span> <span
+							class="sr-only">Previous</span>
+						</a> <a class="carousel-control-next" href="#productCarousel"
+							role="button" data-slide="next"> <span
+							class="carousel-control-next-icon" aria-hidden="true"></span> <span
+							class="sr-only">Next</span>
+						</a>
+					</div>
+				</div>
+				<div class="col-lg-7 col-md-7">
+					<div class="product__details__text">
+						<h3 th:text="${product.productName}"></h3>
+						<div class="product__details__price" id="productPrice"
+							th:text="${price}"></div>
+						<p>Description</p>
 
-                        <p>Description</p>
+						<!-- Chọn dung lượng -->
+						<a th:each="dungLuong : ${listDungLuong}"
+							th:if="${dungLuong != null && !dungLuong.isEmpty()}"
+							th:href="@{'/chi-tiet-san-pham/' + ${product.productId} + '?dungLuong=' + ${dungLuong} + '&color=' + ${selectedColor}}"
+							th:data-dungluong="${dungLuong}"
+							class="primary-btn d-inline-block m-1 dungluong-btn"
+							th:text="${dungLuong}"
+							th:classappend="${dungLuong == selectedDungLuong ? ' selected' : ''}"></a>
+						<br>
 
-                        <!-- Chọn dung lượng -->
-                        <a th:each="dungLuong : ${listDungLuong}" th:if="${dungLuong != null && !dungLuong.isEmpty()}"
-                            th:href="@{/chi-tiet-san-pham/{productId}/{dungLuong}(productId=${product.productId}, dungLuong=${dungLuong})}"
-                            th:data-dungluong="${dungLuong}" class="primary-btn d-inline-block m-1 dungluong-btn"
-                            th:text="${dungLuong}"
-                            th:classappend="${dungLuong == selectedDungLuong ? ' selected' : ''}"></a>
-                        <br>
+						<!-- Chọn màu sắc -->
+						<a th:each="colors : ${listColor}"
+							th:href="@{'/chi-tiet-san-pham/' + ${product.productId} + '?dungLuong=' + ${selectedDungLuong} + '&color=' + ${colors}}"
+							th:data-color="${colors}"
+							class="primary-btn d-inline-block m-1 color-btn"
+							th:text="${colors}"
+							th:classappend="${colors == selectedColor ? ' selected' : ''}"></a>
+						<br>
 
-                        <!-- Chọn màu sắc -->
-                        <a th:each="colors : ${listColor}"
-                            th:href="@{/chi-tiet-san-pham/{productId}/{dungLuong}/{color}(productId=${product.productId}, dungLuong=${selectedDungLuong}, color=${colors})}"
-                            th:data-color="${colors}" class="primary-btn d-inline-block m-1 color-btn"
-                            th:text="${colors}" th:classappend="${colors == selectedColor ? ' selected' : ''}"></a>
-
-                        <br>
-
-                        <div class="product__details__quantity mt-3">
-                            <div class="quantity">
-                                <div class="pro-qty">
-                                    <input type="text" value="1">
-                                </div>
-                            </div>
-                        </div>
-                        <a href="#" class="primary-btn">ADD TO CART</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- Product Details Section End -->
-
+						<div class="product__details__quantity mt-3">
+							<div class="quantity">
+								<div class="pro-qty">
+									<input type="text" value="1">
+								</div>
+							</div>
+						</div>
+						<a href="#" class="primary-btn">ADD TO CART</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
 </body>
-
 </html>
+
+

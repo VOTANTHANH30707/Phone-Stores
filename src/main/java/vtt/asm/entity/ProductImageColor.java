@@ -1,5 +1,7 @@
 package vtt.asm.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,8 +38,9 @@ public class ProductImageColor {
 	@Column(name = "Color", length = 255)
 	private String color;
 
+	@JsonBackReference
 	@ManyToOne
-	@JoinColumn(name = "ProductId", nullable = false)
+	@JoinColumn(name = "product_id")
 	private Product product;
 
 }

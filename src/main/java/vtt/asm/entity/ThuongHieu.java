@@ -2,6 +2,9 @@ package vtt.asm.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,5 +37,6 @@ public class ThuongHieu {
 	private String imageName;
 
 	@OneToMany(mappedBy = "thuongHieu", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore 
 	private List<Product> products;
 }

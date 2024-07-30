@@ -22,55 +22,49 @@
 
     <main th:replace="${view}"></main>
     <footer th:insert="~{/user/fragments/footer :: footer}"></footer>
-   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Xác định giá trị mặc định cho dungLuong và color từ Thymeleaf
-        const defaultDungLuong = /*[[${selectedDungLuong}]]*/ 'defaultDungLuong';
-        const defaultColor = /*[[${selectedColor}]]*/ 'defaultColor';
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const defaultDungLuong = /*[[${selectedDungLuong}]]*/ 'defaultDungLuong';
+            const defaultColor = /*[[${selectedColor}]]*/ 'defaultColor';
 
-        // Lấy giá trị của dungLuong và color từ URL
-        const params = new URLSearchParams(window.location.search);
-        const currentDungLuong = decodeURIComponent(params.get('dungLuong')) || defaultDungLuong;
-        const currentColor = decodeURIComponent(params.get('color')) || defaultColor;
+            const params = new URLSearchParams(window.location.search);
+            const currentDungLuong = decodeURIComponent(params.get('dungLuong')) || defaultDungLuong;
+            const currentColor = decodeURIComponent(params.get('color')) || defaultColor;
 
-        // Lấy tất cả các nút dung lượng và màu sắc
-        const dungLuongBtns = document.querySelectorAll('.dungluong-btn');
-        const colorBtns = document.querySelectorAll('.color-btn');
+            const dungLuongBtns = document.querySelectorAll('.dungluong-btn');
+            const colorBtns = document.querySelectorAll('.color-btn');
 
-        // Đánh dấu nút dung lượng hiện tại hoặc giá trị mặc định
-        dungLuongBtns.forEach(btn => {
-            if (btn.dataset.dungluong === currentDungLuong) {
-                btn.classList.add('selected');
-            }
+            dungLuongBtns.forEach(btn => {
+                if (btn.dataset.dungluong === currentDungLuong) {
+                    btn.classList.add('selected');
+                }
+            });
+
+            colorBtns.forEach(btn => {
+                if (btn.dataset.color === currentColor) {
+                    btn.classList.add('selected');
+                }
+            });
         });
 
-        // Đánh dấu nút màu sắc hiện tại hoặc giá trị mặc định
-        colorBtns.forEach(btn => {
-            if (btn.dataset.color === currentColor) {
-                btn.classList.add('selected');
-            }
+        var app = angular.module('app', []);
+        app.controller('ctrl', function ($scope, $http, $window) {
+            $scope.logout = function () {
+                $http.get('/api/account/logout')
+                    .then(function (response) {
+                        if (response.data.Status === 'Success') {
+                            alert(response.data.message);
+                            $window.location.href = response.data.redirectUrl;
+                        } else {
+                            alert('Logout failed');
+                        }
+                    }, function (error) {
+                        alert('An error occurred during logout');
+                    });
+            };
         });
-    });
+    </script>
 
-    var app = angular.module('app', []);
-    app.controller('ctrl', function ($scope, $http, $window) {
-        $scope.logout = function () {
-            $http.get('/api/account/logout')
-                .then(function (response) {
-                    if (response.data.Status === 'Success') {
-                        alert(response.data.message);
-                        $window.location.href = response.data.redirectUrl;
-                    } else {
-                        alert('Logout failed');
-                    }
-                }, function (error) {
-                    alert('An error occurred during logout');
-                });
-        };
-    });
-</script>
-
-    
 
     <script src="/js/jquery-3.3.1.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>

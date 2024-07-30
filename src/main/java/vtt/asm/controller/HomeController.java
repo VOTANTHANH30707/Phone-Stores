@@ -2,8 +2,10 @@ package vtt.asm.controller;
 
 import java.text.NumberFormat;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,110 +42,98 @@ public class HomeController {
 	}
 
 	@GetMapping("/user/index")
-	public String index(Model model) {
+	public String index(Model model, @RequestParam(value = "dungLuong", required = false) String dungLuong,
+			@RequestParam(value = "color", required = false) String color) {
 		addCategoriesToModel(model);
 		List<Product> products = productService.getProductsWithFormattedPrices();
 		model.addAttribute("products", products);
+
+		// Tạo danh sách để lưu các giá trị mặc định cho dung lượng và màu sắc
+		Map<Integer, String> defaultDungLuongMap = new HashMap<>();
+		Map<Integer, String> defaultColorMap = new HashMap<>();
+
+		for (Product product : products) {
+			List<String> dungLuongs = productDetailService.getDungLuongByProductId(product.getProductId());
+			if (dungLuongs != null && !dungLuongs.isEmpty()) {
+				String lowestDungLuong = dungLuongs.stream().min(Comparator.comparing(dl -> {
+					Double price = productDetailService.getPriceByColorDungLuongProductId(product.getProductId(), dl,
+							null);
+					return price != null ? price : Double.MAX_VALUE;
+				})).orElse(null);
+
+				if (lowestDungLuong != null) {
+					List<String> colors = productDetailService.getColorByDungLuong(product.getProductId(),
+							lowestDungLuong);
+					if (colors != null && !colors.isEmpty()) {
+						String lowestColor = colors.stream().min(Comparator.comparing(c -> {
+							Double price = productDetailService
+									.getPriceByColorDungLuongProductId(product.getProductId(), lowestDungLuong, c);
+							return price != null ? price : Double.MAX_VALUE;
+						})).orElse(null);
+
+						defaultDungLuongMap.put(product.getProductId(), lowestDungLuong);
+						defaultColorMap.put(product.getProductId(), lowestColor);
+					}
+				}
+			}
+		}
+
+		model.addAttribute("defaultDungLuongMap", defaultDungLuongMap);
+		model.addAttribute("defaultColorMap", defaultColorMap);
+
 		return "user/index";
 	}
 
 	@GetMapping("/chi-tiet-san-pham/{productId}")
-	public String detail1(Model model,
-	                      @PathVariable("productId") Integer productId,
-	                      @RequestParam(value = "dungLuong", required = false) String dungLuong,
-	                      @RequestParam(value = "color", required = false) String color) {
-	    addCategoriesToModel(model);
-	    Product product = productDetailService.getProductById(productId);
-	    if (product != null) {
-	        model.addAttribute("product", product);
-
-	        List<String> listDungLuong = productDetailService.getDungLuongByProductId(productId);
-	        model.addAttribute("listDungLuong", listDungLuong);
-
-	        // Đảm bảo giá không bị null và xử lý các giá trị null
-	        String lowestPriceDungLuong = listDungLuong.stream()
-	                .min(Comparator.comparing(d -> {
-	                    Double price = productDetailService.getPriceByColorDungLuongProductId(productId, d, color);
-	                    return price != null ? price : Double.MAX_VALUE;
-	                }))
-	                .orElse(null);
-
-	        List<String> listColor = (dungLuong != null)
-	                ? productDetailService.getColorByDungLuong(productId, dungLuong)
-	                : productDetailService.getColorByProductId(productId);
-
-	        model.addAttribute("listColor", listColor);
-
-	        String lowestPriceColor = (lowestPriceDungLuong != null) ? listColor.stream()
-	                .min(Comparator.comparing(c -> {
-	                    Double price = productDetailService.getPriceByColorDungLuongProductId(productId, lowestPriceDungLuong, c);
-	                    return price != null ? price : Double.MAX_VALUE;
-	                }))
-	                .orElse(null) : null;
-
-	        model.addAttribute("selectedDungLuong", dungLuong != null ? dungLuong : lowestPriceDungLuong);
-	        model.addAttribute("selectedColor", color != null ? color : lowestPriceColor);
-
-	        // Xác định giá dựa trên dungLuong và color đã cung cấp hoặc mặc định
-	        Double price = (dungLuong != null && color != null)
-	                ? productDetailService.getPriceByColorDungLuongProductId(productId, dungLuong, color)
-	                : productDetailService.getPriceByColorDungLuongProductId(productId, lowestPriceDungLuong, lowestPriceColor);
-
-	        String formattedPrice = (price != null)
-	                ? NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(price)
-	                : "";
-
-	        model.addAttribute("price", formattedPrice);
-	    } else {
-	        model.addAttribute("errorMessage", "Sản phẩm không tìm thấy");
-	        return "error";
-	    }
-	    return "user/product/detail_product";
-	}
-
-
-	@GetMapping("/chi-tiet-san-pham/{productId}/{dungLuong}")
-	public String detai_dungluong(Model model, @PathVariable("productId") Integer productId,
-			@PathVariable("dungLuong") String dungLuong) {
+	public String detail1(Model model, @PathVariable("productId") Integer productId,
+			@RequestParam(value = "dungLuong", required = false) String dungLuong,
+			@RequestParam(value = "color", required = false) String color) {
 		addCategoriesToModel(model);
 		Product product = productDetailService.getProductById(productId);
+		List<ProductImageColor> pic = productDetailService.getProductById(productId).getProductImageColors(); // Adjusted
+		model.addAttribute("pic", pic);
 		if (product != null) {
 			model.addAttribute("product", product);
-			model.addAttribute("listDungLuong", productDetailService.getDungLuongByProductId(productId));
-			model.addAttribute("listColor", productDetailService.getColorByDungLuong(productId, dungLuong));
+
+			List<String> listDungLuong = productDetailService.getDungLuongByProductId(productId);
+			model.addAttribute("listDungLuong", listDungLuong);
+
+			String lowestPriceDungLuong = listDungLuong.stream().min(Comparator.comparing(d -> {
+				Double price = productDetailService.getPriceByColorDungLuongProductId(productId, d, color);
+				return price != null ? price : Double.MAX_VALUE;
+			})).orElse(null);
+
+			List<String> listColor = (dungLuong != null)
+					? productDetailService.getColorByDungLuong(productId, dungLuong)
+					: productDetailService.getColorByProductId(productId);
+
+			model.addAttribute("listColor", listColor);
+
+			String lowestPriceColor = (lowestPriceDungLuong != null)
+					? listColor.stream().min(Comparator.comparing(c -> {
+						Double price = productDetailService.getPriceByColorDungLuongProductId(productId,
+								lowestPriceDungLuong, c);
+						return price != null ? price : Double.MAX_VALUE;
+					})).orElse(null)
+					: null;
+
 			model.addAttribute("listImg", productDetailService.getImagesByProductIdDungLuong(productId, dungLuong));
-			model.addAttribute("selectedDungLuong", dungLuong);
-		} else {
-			model.addAttribute("errorMessage", "Product not found");
-			return "error";
-		}
-		return "user/product/detail_product";
-	}
 
-	@GetMapping("/chi-tiet-san-pham/{productId}/{dungLuong}/{color}")
-	public String detail(Model model, @PathVariable("productId") Integer productId,
-			@PathVariable("dungLuong") String dungLuong, @PathVariable("color") String color) {
-		addCategoriesToModel(model);
-		Product product = productDetailService.getProductById(productId);
-		if (product != null) {
-			model.addAttribute("product", product);
-			model.addAttribute("listDungLuong", productDetailService.getDungLuongByProductId(productId));
-			model.addAttribute("listColor", productDetailService.getColorByDungLuong(productId, dungLuong));
-			model.addAttribute("listImg", productDetailService.getImagesByProductId(productId));
+			model.addAttribute("selectedDungLuong", dungLuong != null ? dungLuong : lowestPriceDungLuong);
+			model.addAttribute("selectedColor", color != null ? color : lowestPriceColor);
 
-			// Lấy giá từ dịch vụ
-			Double price = productDetailService.getPriceByColorDungLuongProductId(productId, dungLuong, color);
+			Double price = (dungLuong != null && color != null)
+					? productDetailService.getPriceByColorDungLuongProductId(productId, dungLuong, color)
+					: productDetailService.getPriceByColorDungLuongProductId(productId, lowestPriceDungLuong,
+							lowestPriceColor);
 
-			// Kiểm tra giá và định dạng
-			String formattedPrice = price != null
+			String formattedPrice = (price != null)
 					? NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(price)
-					: "Giá không có sẵn";
+					: "";
 
-			model.addAttribute("price", formattedPrice); // Đảm bảo giá đã được định dạng
-			model.addAttribute("selectedDungLuong", dungLuong);
-			model.addAttribute("selectedColor", color);
+			model.addAttribute("price", formattedPrice);
 		} else {
-			model.addAttribute("errorMessage", "Product not found");
+			model.addAttribute("errorMessage", "Sản phẩm không tìm thấy");
 			return "error";
 		}
 		return "user/product/detail_product";
@@ -152,20 +142,43 @@ public class HomeController {
 	@GetMapping("/loai-san-pham/{cateId}")
 	public String category(Model model, @PathVariable("cateId") int cateId) {
 		addCategoriesToModel(model);
-		List<Product> products = productService.findProductByCategory(cateId);
+
+		List<Product> products = productService.getProductsWithFormattedPricesCate(cateId);
 		model.addAttribute("products", products);
+
+		// Tạo danh sách để lưu các giá trị mặc định cho dung lượng và màu sắc
+		Map<Integer, String> defaultDungLuongMap = new HashMap<>();
+		Map<Integer, String> defaultColorMap = new HashMap<>();
+
+		for (Product product : products) {
+			List<String> dungLuongs = productDetailService.getDungLuongByProductId(product.getProductId());
+			if (dungLuongs != null && !dungLuongs.isEmpty()) {
+				String lowestDungLuong = dungLuongs.stream().min(Comparator.comparing(dl -> {
+					Double price = productDetailService.getPriceByColorDungLuongProductId(product.getProductId(), dl,
+							null);
+					return price != null ? price : Double.MAX_VALUE;
+				})).orElse(null);
+
+				if (lowestDungLuong != null) {
+					List<String> colors = productDetailService.getColorByDungLuong(product.getProductId(),
+							lowestDungLuong);
+					if (colors != null && !colors.isEmpty()) {
+						String lowestColor = colors.stream().min(Comparator.comparing(c -> {
+							Double price = productDetailService
+									.getPriceByColorDungLuongProductId(product.getProductId(), lowestDungLuong, c);
+							return price != null ? price : Double.MAX_VALUE;
+						})).orElse(null);
+
+						defaultDungLuongMap.put(product.getProductId(), lowestDungLuong);
+						defaultColorMap.put(product.getProductId(), lowestColor);
+					}
+				}
+			}
+		}
+
+		model.addAttribute("defaultDungLuongMap", defaultDungLuongMap);
+		model.addAttribute("defaultColorMap", defaultColorMap);
 		return "/user/index";
 	}
 
-	@GetMapping("/gio-hang")
-	public String cart(Model model) {
-		addCategoriesToModel(model);
-		return "user/product/shopping_cart";
-	}
-
-	@GetMapping("/thanh-toan")
-	public String checkout(Model model) {
-		addCategoriesToModel(model);
-		return "user/product/checkout";
-	}
 }

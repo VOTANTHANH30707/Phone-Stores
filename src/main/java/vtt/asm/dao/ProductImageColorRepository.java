@@ -1,12 +1,14 @@
 package vtt.asm.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import vtt.asm.entity.ProductImageColor;
+import vtt.asm.entity.User;
 
 public interface ProductImageColorRepository extends JpaRepository<ProductImageColor, Integer> {
 	// lấy dung lượng của sản phẩm
@@ -29,17 +31,19 @@ public interface ProductImageColorRepository extends JpaRepository<ProductImageC
 	List<String> findImageByProductIdDungLuong(@Param("productId") Integer productId,
 			@Param("dungLuong") String dungLuong);
 
-	@Query("SELECT pic.price FROM ProductImageColor pic JOIN pic.product p "
+	@Query("SELECT MAX(pic.price) FROM ProductImageColor pic JOIN pic.product p "
 			+ "WHERE p.productId = :productId AND pic.dungLuong = :dungLuong AND pic.color = :color")
-		Double findPriceByProductIdDungLuongColor(@Param("productId") Integer productId,
+	Double findPriceByProductIdDungLuongColor(@Param("productId") Integer productId,
 			@Param("dungLuong") String dungLuong, @Param("color") String color);
 
-	@Query("SELECT pic FROM ProductImageColor pic " 
-			+ "WHERE pic.color = :color AND pic.dungLuong = :dungLuong")
+	@Query("SELECT pic FROM ProductImageColor pic " + "WHERE pic.color = :color AND pic.dungLuong = :dungLuong")
 	ProductImageColor findByColorDungLuong(@Param("dungLuong") String dungLuong, @Param("color") String color);
 
 	@Query("SELECT pic.color FROM ProductImageColor pic JOIN pic.product p "
 			+ "WHERE p.productId = :productId AND pic.dungLuong = :dungLuong")
 	List<String> findColorByDungLuong(@Param("productId") Integer productId, @Param("dungLuong") String dungLuong);
+
+	 @Query("SELECT pic FROM ProductImageColor pic WHERE pic.product.id = :productId AND pic.color = :color AND pic.dungLuong = :dungLuong")
+	    Optional<ProductImageColor> findByProductIdAndColorAndDungLuong(@Param("productId") int productId, @Param("dungLuong") String dungLuong, @Param("color") String color);
 
 }

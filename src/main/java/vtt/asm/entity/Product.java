@@ -3,10 +3,13 @@ package vtt.asm.entity;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.Generated;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,45 +34,34 @@ import lombok.Setter;
 public class Product {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ProductId")
+	@Column(name = "product_id")
 	private int productId;
 
-	@Column(name = "Product_Name", nullable = false, length = 150)
+	@Column(name = "Product_Name")
 	private String productName;
 
 	@ManyToOne
-	@JoinColumn(name = "thuong_hieu_id", nullable = false)
-	private ThuongHieu thuongHieu;
+	@JoinColumn(name = "thuong_hieu_id")
+	ThuongHieu thuongHieu;
 
 	@ManyToOne
-	@JoinColumn(name = "CateId", nullable = false)
-	private Category category;
-	
+	@JoinColumn(name = "cate_id")
+	Category category;
+
 	@Temporal(TemporalType.DATE)
-	@Column(name = "ngay_nhap", nullable = false)
+	@Column(name = "ngay_nhap")
 	private Date ngayNhap;
 
-	@Column(name = "Img_Product", length = 255)
+	@Column(name = "Img_Product")
 	private String imgProduct;
 
-	@Column(name = "Description", nullable = false, length = 255)
+	@Column(name = "Description")
 	private String description;
 
-	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProductImageColor> productImageColors;
 
-	/*
-	 * lưu trữ giá đã định dạng để hiển thị trong giao diện người dùng mà không cần
-	 * lưu trường này vào cơ sở dữ liệu.
-	 */
-	/*
-	 * Bỏ Qua Lưu Trữ: Trường được đánh dấu bằng @Transient sẽ không được ánh xạ vào
-	 * bất kỳ cột nào trong cơ sở dữ liệu. Nó không được lưu trữ trong cơ sở dữ liệu
-	 * khi thực hiện các thao tác lưu trữ hoặc truy xuất dữ liệu.
-	 * 
-	 * Dữ Liệu Tạm Thời:Thường được sử dụng cho các thuộc tính của lớp mà chỉ cần thiết trong thời
-	 * gian chạy của ứng dụng hoặc không cần thiết để lưu trữ vào cơ sở dữ liệu.
-	 */
 	@Transient
-	private String lowestPriceFormatted;
+	String lowestPriceFormatted;
 }
